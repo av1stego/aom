@@ -473,6 +473,7 @@ static void merge_colors(uint16_t *colors, uint16_t *cached_colors,
 
 static void read_palette_colors_y(MACROBLOCKD *const xd, int bit_depth,
                                   PALETTE_MODE_INFO *const pmi, aom_reader *r) {
+
   uint16_t color_cache[2 * PALETTE_MAX_SIZE];
   uint16_t cached_colors[PALETTE_MAX_SIZE];
   const int n_cache = av1_get_palette_cache(xd, 0, color_cache);
@@ -505,6 +506,8 @@ static void read_palette_colors_y(MACROBLOCKD *const xd, int bit_depth,
 static void read_palette_colors_uv(MACROBLOCKD *const xd, int bit_depth,
                                    PALETTE_MODE_INFO *const pmi,
                                    aom_reader *r) {
+                                     
+
   const int n = pmi->palette_size[1];
   // U channel colors.
   uint16_t color_cache[2 * PALETTE_MAX_SIZE];
@@ -562,6 +565,7 @@ static void read_palette_colors_uv(MACROBLOCKD *const xd, int bit_depth,
 
 static void read_palette_mode_info(AV1_COMMON *const cm, MACROBLOCKD *const xd,
                                    aom_reader *r) {
+
   const int num_planes = av1_num_planes(cm);
   MB_MODE_INFO *const mbmi = xd->mi[0];
   const BLOCK_SIZE bsize = mbmi->bsize;
@@ -596,11 +600,16 @@ static void read_palette_mode_info(AV1_COMMON *const cm, MACROBLOCKD *const xd,
   }
 }
 
+/*static int read_angle_delta(aom_reader *r, aom_cdf_prob *cdf) {
+  const int sym = aom_read_symbol(r, cdf, 2 * MAX_ANGLE_DELTA + 1, ACCT_STR);
+  return sym - MAX_ANGLE_DELTA;
+}*/
+
 static int read_angle_delta(aom_reader *r, aom_cdf_prob *cdf) {
   const int sym = aom_read_symbol(r, cdf, 2 * MAX_ANGLE_DELTA + 1, ACCT_STR);
   if(sym != 6) {
     int injected_value = sym - ((sym / 2) * 2);
-    printf("Read angle value: %d, injected value: %d\n", sym, injected_value);
+    printf("Read angle value: %d, injected value => %d\n", sym, injected_value);
   } else {
     printf("Angle is 6, ignoring injected value\n");
   }

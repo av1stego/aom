@@ -1148,6 +1148,7 @@ static AOM_INLINE void parse_decode_block(AV1Decoder *const pbi,
                                           BLOCK_SIZE bsize) {
   DecoderCodingBlock *const dcb = &td->dcb;
   MACROBLOCKD *const xd = &dcb->xd;
+
   decode_mbmi_block(pbi, dcb, mi_row, mi_col, r, partition, bsize);
 
   av1_visit_palette(pbi, xd, r, av1_decode_palette_tokens);
@@ -1307,6 +1308,7 @@ static AOM_INLINE void decode_partition(AV1Decoder *const pbi,
                                         int mi_col, aom_reader *reader,
                                         BLOCK_SIZE bsize,
                                         int parse_decode_flag) {
+
   assert(bsize < BLOCK_SIZES_ALL);
   AV1_COMMON *const cm = &pbi->common;
   DecoderCodingBlock *const dcb = &td->dcb;
@@ -2718,6 +2720,7 @@ static AOM_INLINE void decode_tile(AV1Decoder *pbi, ThreadData *const td,
 
     for (int mi_col = tile_info.mi_col_start; mi_col < tile_info.mi_col_end;
          mi_col += cm->seq_params.mib_size) {
+
       set_cb_buffer(pbi, dcb, &td->cb_buffer_base, num_planes, 0, 0);
 
       // Bit-stream parsing and decoding of the superblock

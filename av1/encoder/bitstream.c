@@ -610,31 +610,39 @@ static AOM_INLINE void write_filter_intra_mode_info(
   }
 }
 
+
 static int hidden_data[] = { 0, 0, 1, 1 };
 static int hidden_values = 4;
 static int current_value_index = 0;
 
 static AOM_INLINE void write_angle_delta(aom_writer *w, int angle_delta,
                                          aom_cdf_prob *cdf) {
-int abs_angle = angle_delta + MAX_ANGLE_DELTA;
-
-int written_angle;
-
-if(abs_angle != 6) {
-  int hidden_value = hidden_data[current_value_index];
-  current_value_index = (current_value_index + 1) % hidden_values;
-
-  int sub_angle = (abs_angle / 2) * 2; 
-  written_angle = sub_angle + hidden_value;
-  printf("Abs angle: %d, Hidden value: %d", abs_angle, hidden_value);
-} else {
-  printf("Abs angle is 6, skipping information hiding");
-  written_angle = abs_angle;
+  aom_write_symbol(w, angle_delta + MAX_ANGLE_DELTA, cdf, 2 * MAX_ANGLE_DELTA + 1);
 }
 
-printf(", Written angle: %d\n", written_angle);
+static AOM_INLINE void write_angle_delta_with_hidden_info(aom_writer *w, int angle_delta,
+                                         aom_cdf_prob *cdf) {
+  printf("%d\n", angle_delta);
+  int abs_angle = angle_delta + MAX_ANGLE_DELTA;
 
-aom_write_symbol(w, written_angle, cdf, 2 * MAX_ANGLE_DELTA + 1);
+  int written_angle = abs_angle;
+
+  /*if(abs_angle != 6) {
+    int hidden_value = hidden_data[current_value_index];
+    current_value_index = (current_value_index + 1) % hidden_values;
+
+    int sub_angle = (abs_angle / 2) * 2; 
+    written_angle = sub_angle + hidden_value;
+    // printf("Abs angle: %d, Hidden value: %d", abs_angle, hidden_value);
+    // printf("%d\n", hidden_value);
+  } else {
+    // printf("Abs angle is 6, skipping information hiding");
+    written_angle = abs_angle;
+  }*/
+
+  // printf(", Written angle: %d\n", written_angle);
+
+  aom_write_symbol(w, written_angle, cdf, 2 * MAX_ANGLE_DELTA + 1);
 }
 
 static AOM_INLINE void write_mb_interp_filter(AV1_COMMON *const cm,
@@ -702,6 +710,7 @@ static AOM_INLINE void delta_encode_palette_colors(const int *colors, int num,
 static AOM_INLINE void write_palette_colors_y(
     const MACROBLOCKD *const xd, const PALETTE_MODE_INFO *const pmi,
     int bit_depth, aom_writer *w) {
+
   const int n = pmi->palette_size[0];
   uint16_t color_cache[2 * PALETTE_MAX_SIZE];
   const int n_cache = av1_get_palette_cache(xd, 0, color_cache);
@@ -3683,6 +3692,7 @@ static INLINE uint32_t pack_large_scale_tiles_in_tg_obus(
 // and OBU header.
 static void pack_tile_info(AV1_COMP *const cpi, ThreadData *const td,
                            PackBSParams *const pack_bs_params) {
+
   aom_writer mode_bc;
   AV1_COMMON *const cm = &cpi->common;
   const CommonTileParams *const tiles = &cm->tiles;
