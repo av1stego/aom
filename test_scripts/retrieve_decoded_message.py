@@ -6,7 +6,11 @@ def string_from_bits(bits):
     for b in range(0, bytes_count):
         byte = bits[b*8:(b+1)*8]
         byte.reverse()
-        chars.append(chr(int(''.join([str(bit) for bit in byte]), 2)))
+        char = chr(int(''.join([str(bit) for bit in byte]), 2))
+        chars.append(char)
+        if char == '\0':
+            break
+
     return ''.join(chars)
 
 def retrieve_bits_from_lines(lines):
