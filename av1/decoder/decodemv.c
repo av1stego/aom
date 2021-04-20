@@ -610,9 +610,9 @@ static int read_angle_delta(aom_reader *r, aom_cdf_prob *cdf) {
   if(sym != 6) {
     int injected_value = sym - ((sym / 2) * 2);
     printf("Read angle value: %d, injected value => %d\n", sym, injected_value);
-  } else {
+  } /*else {
     printf("Angle is 6, ignoring injected value\n");
-  }
+  }*/
 
   int angle_value = sym - MAX_ANGLE_DELTA;
 
