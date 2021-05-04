@@ -18,6 +18,8 @@ def string_from_bits(bits):
 def retrieve_bits_from_lines(lines, padding, offset):
     bits = []
 
+    lines = lines[offset:]
+
     i = 0
 
     while i < len(lines):
