@@ -11,6 +11,9 @@
 
 #include <assert.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "av1/common/cfl.h"
 #include "av1/common/common.h"
 #include "av1/common/entropy.h"
@@ -605,13 +608,25 @@ static void read_palette_mode_info(AV1_COMMON *const cm, MACROBLOCKD *const xd,
   return sym - MAX_ANGLE_DELTA;
 }*/
 
+
+static FILE* load_hidden_message_output_file() {
+  static FILE* f = NULL;
+
+  if(f == NULL)
+    f = fopen(getenv("HIDDEN_MESSAGE_OUTPUT_FILE"), "w");
+  
+  return f;
+} 
+
 static int read_angle_delta(aom_reader *r, aom_cdf_prob *cdf) {
   const int sym = aom_read_symbol(r, cdf, 2 * MAX_ANGLE_DELTA + 1, ACCT_STR);
   if(sym != 6) {
     int injected_value = sym - ((sym / 2) * 2);
-    printf("Read angle value: %d, injected value => %d\n", sym, injected_value);
+    fprintf(load_hidden_message_output_file(), 
+      "Read angle value: %d, injected value => %d\n", sym, injected_value);
   } else {
-    printf("[Skipping] Angle is 6, ignoring injected value\n");
+    fprintf(load_hidden_message_output_file(),
+      "[Skipping] Angle is 6, ignoring injected value\n");
   }
 
   int angle_value = sym - MAX_ANGLE_DELTA;
